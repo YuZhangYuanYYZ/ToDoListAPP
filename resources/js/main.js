@@ -51,21 +51,29 @@ function dataObjectUpdated() {
   localStorage.setItem('todoList', JSON.stringify(data));
 }
 
-function removeItem() {
-  const toDo = updateRemoveRelatedDom(this)
-  updateGlobalData(data, toDo);
+function removeItem(event) {
+  const toDO = getToDoItmeInfo(event.target);
+  updateGlobalData(data, toDO);
+  
   updateLocalStorage(data);
+
+  removeSelectToDoDom(event.target);
 }
 
-function updateRemoveRelatedDom(removeButton){
+function getToDoItmeInfo(removeButton){
   var item = removeButton.parentNode.parentNode;
   var parent = item.parentNode;
   const toDo = {
     updateKey: parent.id,
     updateValue: item.innerText
   }
-  parent.removeChild(item);
   return toDo;
+}
+
+function removeSelectToDoDom(removeButton){
+  var item = removeButton.parentNode.parentNode;
+  var parent = item.parentNode;
+  parent.removeChild(item);
 }
 
 function updateGlobalData(data, toDo){

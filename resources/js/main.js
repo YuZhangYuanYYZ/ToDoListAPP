@@ -1,3 +1,5 @@
+0723
+
 var data = (localStorage.getItem('todoList')) ? JSON.parse(localStorage.getItem('todoList')) : {
   todo: [],
   completed: []
@@ -16,7 +18,7 @@ document.getElementById('add').addEventListener('click', function () {
 });
 
 document.getElementById('item').addEventListener('keydown', function (e) {
-  var itemContents = this.value;
+  var itemContents = document.getElementById('item').value;
   if ((e.code === 'Enter' || e.code === 'NumpadEnter') && itemContents) {
     addTodoItem(itemContents);
   }
@@ -46,11 +48,11 @@ function dataObjectUpdated() {
 }
 
 
-function getItemInformation(thisElement) {
-  let item = thisElement.parentNode.parentNode;
-  let parent = item.parentNode;
-  let id = parent.id;
-  let value = item.innerText;
+function getcurrentProcessElement(event) {
+  var item = event.parentNode.parentNode;
+  var parent = item.parentNode;
+  var id = parent.id;
+  var value = item.innerText;
   return {
     item,
     parent,
@@ -59,36 +61,53 @@ function getItemInformation(thisElement) {
   }
 }
 
-function clicRemoveButton() {
-  let itemInfo = getItemInformation(this);
-  if (itemInfo.id === 'todo') {
-    data.todo.splice(data.todo.indexOf(itemInfo.value), 1);
-  } else {
-    data.completed.splice(data.completed.indexOf(itemInfo.value), 1);
-  }
-  dataObjectUpdated();
-  itemInfo.parent.removeChild(itemInfo.item);
+function updateDomAfterClicRemoveButton(parent, item) {
+  parent.removeChild(item);
+
 }
 
-function proceeTwoKindOfCompletedItem(thisElement) {
-  let itemInfo = getItemInformation(thisElement);
-  if (itemInfo.id === 'todo') {
-    data.todo.splice(data.todo.indexOf(itemInfo.value), 1);
-    data.completed.push(itemInfo.value);
+function updateGlobalDateAfterClicRemoveButton(id, value, data) {
+  if (id === 'todo') {
+    data.todo.splice(data.todo.indexOf(value), 1);
   } else {
-    data.completed.splice(data.completed.indexOf(itemInfo.value), 1);
-    data.todo.push(itemInfo.value);
+    data.completed.splice(data.completed.indexOf(value), 1);
   }
-  return itemInfo;
 }
 
-function clicCompleteButton() {
-  let itemInfo = proceeTwoKindOfCompletedItem(this);
-  dataObjectUpdated();
-  // Check if the item should be added to the completed list or to re-added to the todo list
-  var target = (itemInfo.id === 'todo') ? document.getElementById('completed') : document.getElementById('todo');
-  itemInfo.parent.removeChild(itemInfo.item);
-  target.insertBefore(itemInfo.item, target.childNodes[0]);
+function updateLocalStorage(data) {
+  localStorage.setItem('todoList', JSON.stringify(data));
+}
+
+function removeItem() {
+  let currentProcessElement = getcurrentProcessElement(this);
+  updateDomAfterClicRemoveButton(currentProcessElement.parent, currentProcessElement.item);
+  updateGlobalDateAfterClicRemoveButton(currentProcessElement.id, currentProcessElement.value, data);
+  updateLocalStorage(data);
+}
+
+
+function updateDomAfterClickCompleteButton(parent, item) {
+  var target = (parent.id === 'todo') ? document.getElementById('completed') : document.getElementById('todo');
+  parent.removeChild(item);
+  target.insertBefore(item, target.childNodes[0]);
+}
+
+function updateGlobalDateAfterClicRemoveButton(id, value, data) {
+  if (id == "todo") {
+    data.completed.push(value);
+    data.todo.splice(data.todo.indexOf(value), 1);
+  }
+  else {
+    data.todo.push(value);
+    data.completed.splice(data.completed.indexOf(value), 1);
+  }
+}
+
+function completeItem() {
+  let currentProcessElement = getcurrentProcessElement(this);
+  updateDomAfterClickCompleteButton(currentProcessElement.parent, currentProcessElement.item);
+  updateGlobalDateAfterClicRemoveButton(currentProcessElement.id, currentProcessElement.value, data);
+  updateLocalStorage(data);
 }
 
 function createAButton(buttonName, className, buttonSVG) {
@@ -113,11 +132,11 @@ function addEventListenerToButton() {
   // Add click event for removing the item
   let aRemoveButton;
   let removeButton = createAButton(aRemoveButton, "remove", removeSVG);
-  removeButton.addEventListener('click', clicRemoveButton);
+  removeButton.addEventListener('click', removeItem);
   // Add click event for completing the item
   let aCompleteButton;
   let completeButton = createAButton(aCompleteButton, "complete", completeSVG);
-  completeButton.addEventListener('click', clicCompleteButton);
+  completeButton.addEventListener('click', completeItem);
   return {
     removeButton,
     completeButton
@@ -125,6 +144,7 @@ function addEventListenerToButton() {
 }
 // Adds a new item to the todo list
 function addItemToDOM(text, completed) {
+
   var list = (completed) ? document.getElementById('completed') : document.getElementById('todo');
   let liWithButtonsElement = createLiWithButtons(text);
   // let buttonElement = liWithButtonsElement.buttonElements;

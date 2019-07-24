@@ -8,7 +8,7 @@ const completeSVG = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns
 
 renderTodoList();
 // User clicked on the add button, If there is any text inside the item field, add that text to the todo list
-document.getElementById('add').addEventListener('click', function () {
+document.getElementById('add').addEventListener('click', function (e) {
   let itemContents = document.getElementById('item').value;
   if (itemContents) {
     addTodoItem(itemContents);
@@ -16,7 +16,7 @@ document.getElementById('add').addEventListener('click', function () {
 });
 
 document.getElementById('item').addEventListener('keydown', function (e) {
-  let itemContents = document.getElementById('item').value;
+  let itemContents = e.target.value;
   if ((e.code === 'Enter' || e.code === 'NumpadEnter') && itemContents) {
     addTodoItem(itemContents);
   }
@@ -90,7 +90,7 @@ function updateDomAfterClickCompleteButton(parent, item) {
   target.insertBefore(item, target.childNodes[0]);
 }
 
-function updateGlobalDateAfterClicRemoveButton(id, value, data) {
+function updateGlobalDateAfterClicCompleteButton(id, value, data) {
   if (id == "todo") {
     data.completed.push(value);
     data.todo.splice(data.todo.indexOf(value), 1);
@@ -104,7 +104,7 @@ function updateGlobalDateAfterClicRemoveButton(id, value, data) {
 function completeItem() {
   let currentProcessElement = getcurrentProcessElement(this);
   updateDomAfterClickCompleteButton(currentProcessElement.parent, currentProcessElement.item);
-  updateGlobalDateAfterClicRemoveButton(currentProcessElement.id, currentProcessElement.value, data);
+  updateGlobalDateAfterClicCompleteButton(currentProcessElement.id, currentProcessElement.value, data);
   updateLocalStorage(data);
 }
 

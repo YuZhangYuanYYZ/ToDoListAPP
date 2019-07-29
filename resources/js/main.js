@@ -120,40 +120,36 @@ function createLiElement(text) {
   item.innerText = text;
   return item;
 }
-function createButtonsDiv() {
-  let divElements = document.createElement('div');
-  divElements.classList.add('buttons');
-  return divElements;
+function createButtonsContainer() {
+  let buttonContainer = document.createElement('div');
+  buttonContainer.classList.add('buttons');
+  return buttonContainer;
 }
 
-
-function addEventListenerToButton() {
-  // Add click event for removing the item
-  let aRemoveButton;
-  let removeButton = createAButton(aRemoveButton, "remove", removeSVG);
+function createRemoveButton() {
+  let removeButtonName;
+  let removeButton = createAButton(removeButtonName, "remove", removeSVG);
   removeButton.addEventListener('click', removeItem);
-  // Add click event for completing the item
-  let aCompleteButton;
-  let completeButton = createAButton(aCompleteButton, "complete", completeSVG);
-  completeButton.addEventListener('click', completeItem);
-  return {
-    removeButton,
-    completeButton
-  }
+  return removeButton;
 }
-// Adds a new item to the todo list
+function createCompletedButton() {
+  let completeButtonName;
+  let completeButton = createAButton(completeButtonName, "complete", completeSVG);
+  completeButton.addEventListener('click', completeItem);
+  return completeButton;
+}
 function addItemToDOM(text, completed) {
 
   let list = (completed) ? document.getElementById('completed') : document.getElementById('todo');
-  let aToDoLiElement = createLiElement(text);
-  let aToDoItem = createButtonsDiv();
-  // let buttonElement = aToDoItem.buttonElements;
-  let eventButton = addEventListenerToButton();
+  let toDoLiElement = createLiElement(text);
+  let buttonContainer = createButtonsContainer();
+  let removeButton = createRemoveButton();
+  let cteatedButton = createCompletedButton();
 
-  aToDoItem.appendChild(eventButton.removeButton);
-  aToDoItem.appendChild(eventButton.completeButton);
-  aToDoLiElement.appendChild(aToDoItem);
+  buttonContainer.appendChild(removeButton);
+  buttonContainer.appendChild(cteatedButton);
+  toDoLiElement.appendChild(buttonContainer);
 
-  list.insertBefore(aToDoLiElement, list.childNodes[0]);
+  list.insertBefore(toDoLiElement, list.childNodes[0]);
 }
 

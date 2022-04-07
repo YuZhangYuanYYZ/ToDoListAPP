@@ -51,19 +51,41 @@ function dataObjectUpdated() {
   localStorage.setItem('todoList', JSON.stringify(data));
 }
 
-function removeItem() {
-  var item = this.parentNode.parentNode;
-  var parent = item.parentNode;
-  var id = parent.id;
-  var value = item.innerText;
+function removeItem(event) {
+  const toDO = getToDoItmeInfo(event.target);
+  updateGlobalData(data, toDO);
+  
+  updateLocalStorage(data);
 
-  if (id === 'todo') {
-    data.todo.splice(data.todo.indexOf(value), 1);
-  } else {
-    data.completed.splice(data.completed.indexOf(value), 1);
+  removeSelectToDoDom(event.target);
+}
+
+function getToDoItmeInfo(removeButton){
+  var item = removeButton.parentNode.parentNode;
+  var parent = item.parentNode;
+  const toDo = {
+    updateKey: parent.id,
+    updateValue: item.innerText
   }
-  dataObjectUpdated();
+  return toDo;
+}
+
+function removeSelectToDoDom(removeButton){
+  var item = removeButton.parentNode.parentNode;
+  var parent = item.parentNode;
   parent.removeChild(item);
+}
+
+function updateGlobalData(data, toDo){
+  if (toDo.updateKey === 'todo') {
+    data.todo.splice(data.todo.indexOf(toDo.value), 1);
+  } else {
+    data.completed.splice(data.completed.indexOf(toDo.value), 1);
+  }
+}
+
+function updateLocalStorage(data){
+  localStorage.setItem('todoList', JSON.stringify(data));
 }
 
 function completeItem() {
